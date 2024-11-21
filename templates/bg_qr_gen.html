@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .main-container:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container form label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 15px;
+            display: block;
+        }
+
+        input[type="text"], input[type="file"]{
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="file"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="color"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .qr-code-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .qr-code {
+            padding: 120px; /* Initially 150px */
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: padding 0.3s ease;
+        }
+
+        .qr-code img {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Initially hide the logo upload field */
+        #logo-upload {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Left Side: Form -->
+        <div class="container">
+            <h1>QR Code Generator</h1>
+            <form method="POST" action="/generate_bg" enctype="multipart/form-data">
+                <label for="url">Enter URL</label>
+                <input type="text" name="url" placeholder="https://example.com" required>
+
+                <!-- Checkbox for background image -->
+                <label>
+                    <input type="checkbox" id="use_background" name="use_background" onchange="toggleLogoUpload()"> Use background image
+                </label>
+
+                <!-- Logo upload (hidden initially) -->
+                <div id="logo-upload">
+                    <label for="logo">Upload Logo (optional)</label>
+                    <input type="file" name="logo" accept="image/*">
+                </div>
+
+                <label for="qr_color">Choose QR code color:</label>
+                <input type="color" id="qr_color" name="qr_color" value="#000000"> <!-- Default color is black -->
+
+                <button type="submit">Generate QR Code</button>
+            </form>
+        </div>
+
+        <!-- Right Side: QR Code Display -->
+        <div class="qr-code-container">
+            <div class="qr-code" id="qr-code-box">
+                {% if qr_code_image %}
+                    <img src="{{ qr_code_image }}" alt="Generated QR Code">
+                {% else %}
+                    <p>No QR Code generated yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle the logo upload field visibility
+        function toggleLogoUpload() {
+            const checkbox = document.getElementById('use_background');
+            const logoUpload = document.getElementById('logo-upload');
+            if (checkbox.checked) {
+                logoUpload.style.display = 'block';
+            } else {
+                logoUpload.style.display = 'none';
+            }
+        }
+
+        // Set QR code padding based on whether it is generated
+        window.onload = function() {
+            const qrCodeBox = document.getElementById('qr-code-box');
+            const qrCodeImg = qrCodeBox.querySelector('img');
+
+            if (qrCodeImg) {
+                // If QR code is generated, set padding to 20px
+                qrCodeBox.style.padding = '20px';
+            } else {
+                // Reset padding to 150px when no QR code is generated
+                qrCodeBox.style.padding = '120px';
+            }
+        }
+    </script>
+</body>
+</html>
